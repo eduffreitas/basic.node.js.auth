@@ -9,7 +9,7 @@ export const PassportConfig = (passport) => {
     };
 
     passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
-        User.getUserById(jwtPayload._id, (err, user) => {
+        User.getUserById(jwtPayload._doc._id, (err, user) => {
             if (err) {
                 return done(err, false);
             }
