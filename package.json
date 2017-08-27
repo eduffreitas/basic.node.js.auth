@@ -1,0 +1,32 @@
+{
+  "name": "sembler.io",
+  "version": "1.0.0",
+  "description": "Sembler.io backend API",
+  "main": "./dist/app.js",
+  "scripts": {
+    "assets": "find ./src -name '*.html' -type f -exec cp --parents {} ./dist \\;",
+    "start": "./dist/app.js",    
+    "test": "echo \"Error: no test script specified\" && exit 1"
+  },
+  "author": "Eduardo de Freitas",
+  "dependencies": {
+    "express": "*",
+    "mongoose": "*",
+    "cors": "*",
+    "bcryptjs": "*",
+    "jsonwebtoken": "*",
+    "body-parser": "*",
+    "passport": "*",
+    "passport-jwt": "*",
+    "path": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eduffreitas/basic.node.js.auth.git"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/eduffreitas/basic.node.js.auth/issues"
+  },
+  "homepage": "https://github.com/eduffreitas/basic.node.js.auth#readme"
+}
