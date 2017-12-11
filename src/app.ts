@@ -4,12 +4,14 @@ import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 import * as passport from 'passport';
 import * as mongoose from 'mongoose';
-import { users } from './routes/users';
-import { database as dbConfig } from './config/database';
-import { PassportConfig } from './config/passport';
+import * as process from 'process';
+import { UserRoutes } from './routes/user.route';
+import { database as dbConfig } from './config/database.config';
+import { PassportConfig } from './config/passport.config';
 
 //Declaring for compilation porpuses
 declare var __dirname;
+mongoose.Promise = Promise;
 
 //Mongoose connect
 mongoose.connect(dbConfig.database);
@@ -28,7 +30,7 @@ mongoose.connection.on('error', (err) => {
 const app = express();
 
 //port number
-const port = 3000;
+const port = process.env.PORT || 3010;
 
 //Enabling Cors
 app.use(cors());
@@ -46,7 +48,7 @@ app.use(passport.session());
 PassportConfig(passport);
 
 //Adding users route
-app.use('/api/users', users);
+app.use('/api/user', UserRoutes);
 
 //Index route
 app.get('/', (req, res) => {

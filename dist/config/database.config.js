@@ -1,7 +1,7 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.database = {
     database: 'mongodb://localhost/default',
     secret: 'fuckthepolice'
 };
-//# sourceMappingURL=database.js.map
+//# sourceMappingURL=database.config.js.map

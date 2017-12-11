@@ -1,7 +1,14 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 
-const UserSchema = mongoose.Schema({
+export interface IUser {
+    id: string,
+    name: string,
+    email: string,
+    userName: string
+}
+
+const UserModelSchema = mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -20,18 +27,18 @@ const UserSchema = mongoose.Schema({
     },
 });
 
-export const User = mongoose.model('User', UserSchema);
+export const UserModel = mongoose.model('UserModel', UserModelSchema);
 
-User.getUserById = (id, callback) => {
-    User.findById(id, callback);
+UserModel.getUserById = (id, callback) => {
+    UserModel.findById(id, callback);
 }
 
-User.getUserByUserName = (userName, callback) => {
+UserModel.getUserByUserName = (userName, callback) => {
     const query = { userName: userName}
-    User.findOne(query, callback);
+    UserModel.findOne(query, callback);
 }
 
-User.addUser = (newUser, callback) => {
+UserModel.addUser = (newUser, callback) => {
     bcrypt.genSalt(10, (err, salt) => {
         if (err) throw err;
         bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -42,7 +49,7 @@ User.addUser = (newUser, callback) => {
     });
 }
 
-User.comparePassword = (password, hash, callback) => {
+UserModel.comparePassword = (password, hash, callback) => {
     bcrypt.compare(password, hash, (err, isMatch) => {
         if (err) throw err;
         callback(null, isMatch);

@@ -1,8 +1,8 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose = require("mongoose");
 var bcrypt = require("bcryptjs");
-var UserSchema = mongoose.Schema({
+var UserModelSchema = mongoose.Schema({
     name: {
         type: String,
         required: true
@@ -18,17 +18,17 @@ var UserSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
-    }
+    },
 });
-exports.User = mongoose.model('User', UserSchema);
-exports.User.getUserById = function (id, callback) {
-    exports.User.findById(id, callback);
+exports.UserModel = mongoose.model('UserModel', UserModelSchema);
+exports.UserModel.getUserById = function (id, callback) {
+    exports.UserModel.findById(id, callback);
 };
-exports.User.getUserByUserName = function (userName, callback) {
+exports.UserModel.getUserByUserName = function (userName, callback) {
     var query = { userName: userName };
-    exports.User.findOne(query, callback);
+    exports.UserModel.findOne(query, callback);
 };
-exports.User.addUser = function (newUser, callback) {
+exports.UserModel.addUser = function (newUser, callback) {
     bcrypt.genSalt(10, function (err, salt) {
         if (err)
             throw err;
@@ -40,11 +40,11 @@ exports.User.addUser = function (newUser, callback) {
         });
     });
 };
-exports.User.comparePassword = function (password, hash, callback) {
+exports.UserModel.comparePassword = function (password, hash, callback) {
     bcrypt.compare(password, hash, function (err, isMatch) {
         if (err)
             throw err;
         callback(null, isMatch);
     });
 };
-//# sourceMappingURL=user.js.map
+//# sourceMappingURL=user.model.js.map

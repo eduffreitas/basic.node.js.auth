@@ -1,15 +1,15 @@
 import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
-import { User } from '../models/user';
-import { database as config } from '../config/database';
+import { UserModel } from '../models/user.model';
+import { database as config } from '../config/database.config';
 
 export const PassportConfig = (passport) => {
     let opts = {
-        jwtFromRequest: ExtractJwt.fromAuthHeader(),
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: config.secret
     };
 
     passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
-        User.getUserById(jwtPayload._doc._id, (err, user) => {
+        UserModel.getUserById(jwtPayload._doc._id, (err, user) => {
             if (err) {
                 return done(err, false);
             }
