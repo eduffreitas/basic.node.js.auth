@@ -23,45 +23,50 @@ UserRoutes.post('/register', (req, res, next) => {
         password: req.body.password,
     });
 
-    UserModel.addUser(newUser, (err, user) =>{
-        if (err) {
+    UserModel.addUser(newUser)
+        .then((user) =>{
+            res.json({success: true, msg: 'User registered', data: parseResponse(user)});
+        })
+        .catch((err) => {
             console.log(`Failed to register user: ${err}`);
             res.status(400).json({success: false, msg: `Failed to register user: ${err}`});
-
-        }
-        else {
-            res.json({success: true, msg: 'User registered', data: parseResponse(user)});
-        }
-    })
+        });
 });
 
 UserRoutes.post('/authenticate', (req, res, next) => {
     const userName = req.body.userName;
     const password = req.body.password;
 
-    UserModel.getUserByUserName(userName, (err, user) => {
-        if (err) throw err;
-
-        if (!user) {
-            return res.status(404).json({success: false, msg: 'User not found.'});
-        }
-
-        UserModel.comparePassword(password, user.password, (err, isMatch) => {
-            if (err) throw err;
-
-            if (isMatch) {
-                const token = jwt.sign(user, dbConfig.secret, {
-                    expiresIn: 604800
-                });
-
-                res.json({
-                    success: true,
-                    token: `JWT ${token}`,
-                    user: parseResponse(user)
-                });
+    UserModel.getUserByUserName(userName)
+        .then((err, user) => {
+            if (!user) {
+                return res.status(404).json({success: false, msg: 'User not found.'});
             }
+
+            UserModel.comparePassword(password, user.password)
+                .then((isMatch) => {
+    
+                    if (isMatch) {
+                        const token = jwt.sign(user, dbConfig.secret, {
+                            expiresIn: 604800
+                        });
+    
+                        res.json({
+                            success: true,
+                            token: `JWT ${token}`,
+                            user: parseResponse(user)
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(`An error ocurred while comparing the user password ${err}`);
+                    res.status(500).json({success: false, msg: 'Internal Server Error.'});
+                })
         })
-    });
+        .catch((err) => {
+            console.log(`An error ocurred while saving the user ${err}`);
+            res.status(500).json({success: false, msg: 'Internal Server Error.'});            
+        });
 });
 
 UserRoutes.get('/profile', passport.authenticate('jwt', {session: false}), (req, res, next) => {

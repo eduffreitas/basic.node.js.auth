@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var mongoose = require("mongoose");
 var bcrypt = require("bcryptjs");
+var es6_promise_1 = require("es6-promise");
 var UserModelSchema = mongoose.Schema({
     name: {
         type: String,
@@ -21,30 +22,36 @@ var UserModelSchema = mongoose.Schema({
     },
 });
 exports.UserModel = mongoose.model('UserModel', UserModelSchema);
-exports.UserModel.getUserById = function (id, callback) {
-    exports.UserModel.findById(id, callback);
+exports.UserModel.getUserById = function (id) {
+    return exports.UserModel.findById(id).exec();
 };
-exports.UserModel.getUserByUserName = function (userName, callback) {
+exports.UserModel.getUserByUserName = function (userName) {
     var query = { userName: userName };
-    exports.UserModel.findOne(query, callback);
+    return exports.UserModel.findOne(query).exec();
 };
-exports.UserModel.addUser = function (newUser, callback) {
-    bcrypt.genSalt(10, function (err, salt) {
-        if (err)
-            throw err;
-        bcrypt.hash(newUser.password, salt, function (err, hash) {
+exports.UserModel.addUser = function (newUser) {
+    return new es6_promise_1.Promise(function (resolve, reject) {
+        bcrypt.genSalt(10, function (err, salt) {
             if (err)
-                throw err;
-            newUser.password = hash;
-            newUser.save(callback);
+                reject(err);
+            resolve(new es6_promise_1.Promise(function (innerResolve, innerReject) {
+                bcrypt.hash(newUser.password, salt, function (err, hash) {
+                    if (err)
+                        innerReject(err);
+                    newUser.password = hash;
+                    innerResolve(newUser.save());
+                });
+            }));
         });
     });
 };
-exports.UserModel.comparePassword = function (password, hash, callback) {
-    bcrypt.compare(password, hash, function (err, isMatch) {
-        if (err)
-            throw err;
-        callback(null, isMatch);
+exports.UserModel.comparePassword = function (password, hash) {
+    return new es6_promise_1.Promise(function (resolve, reject) {
+        bcrypt.compare(password, hash, function (err, isMatch) {
+            if (err)
+                reject(err);
+            resolve(isMatch);
+        });
     });
 };
 //# sourceMappingURL=user.model.js.map

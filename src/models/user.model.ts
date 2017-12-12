@@ -1,5 +1,6 @@
 import * as mongoose from 'mongoose';
 import * as bcrypt from 'bcryptjs';
+import { Promise } from 'es6-promise';
 
 export interface IUser {
     id: string,
@@ -29,29 +30,38 @@ const UserModelSchema = mongoose.Schema({
 
 export const UserModel = mongoose.model('UserModel', UserModelSchema);
 
-UserModel.getUserById = (id, callback) => {
-    UserModel.findById(id, callback);
+UserModel.getUserById = (id) => {
+    return UserModel.findById(id).exec();
 }
 
-UserModel.getUserByUserName = (userName, callback) => {
+UserModel.getUserByUserName = (userName) => {
     const query = { userName: userName}
-    UserModel.findOne(query, callback);
+    return UserModel.findOne(query).exec();
 }
 
-UserModel.addUser = (newUser, callback) => {
-    bcrypt.genSalt(10, (err, salt) => {
-        if (err) throw err;
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-            if (err) throw err;
-            newUser.password = hash;
-            newUser.save(callback);
-        });
+UserModel.addUser = (newUser) => {
+    return new Promise((resolve, reject) => {
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) reject(err);
+
+            resolve(new Promise((innerResolve, innerReject) => {
+                bcrypt.hash(newUser.password, salt, (err, hash) => {
+                    if (err) innerReject(err);
+
+                    newUser.password = hash;
+                    innerResolve(newUser.save());
+                });
+            }));
+        })
     });
 }
 
-UserModel.comparePassword = (password, hash, callback) => {
-    bcrypt.compare(password, hash, (err, isMatch) => {
-        if (err) throw err;
-        callback(null, isMatch);
+UserModel.comparePassword = (password, hash) => {
+    return new Promise((resolve, reject) => {
+        bcrypt.compare(password, hash, (err, isMatch) => {
+            if (err) reject(err);
+
+            resolve(isMatch);
+        });
     });
 }

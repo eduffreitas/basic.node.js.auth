@@ -9,18 +9,17 @@ export const PassportConfig = (passport) => {
     };
 
     passport.use(new JwtStrategy(opts, (jwtPayload, done) => {
-        UserModel.getUserById(jwtPayload._doc._id, (err, user) => {
-            if (err) {
+        UserModel.getUserById(jwtPayload._doc._id)
+            .then((user) => {
+                if (user) {
+                    return done(null, user);
+                } else {
+                    return done(null, false);
+                }
+            })
+            .catch((err) => {
                 return done(err, false);
-            }
-
-            if (user) {
-                return done(null, user);
-            } else {
-                return done(null, false);
-            }
-        });
-
+            });
     }));
 
 };
