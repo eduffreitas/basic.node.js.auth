@@ -34,20 +34,27 @@ exports.UserRoutes.post('/authenticate', function (req, res, next) {
     var userName = req.body.userName;
     var password = req.body.password;
     user_model_1.UserModel.getUserByUserName(userName)
-        .then(function (err, user) {
+        .then(function (user) {
         if (!user) {
-            return res.status(404).json({ success: false, msg: 'User not found.' });
+            res.status(404).json({ success: false, msg: 'User not found.' });
+            return;
         }
         user_model_1.UserModel.comparePassword(password, user.password)
             .then(function (isMatch) {
             if (isMatch) {
-                var token = jwt.sign(user, database_config_1.database.secret, {
+                var token = jwt.sign(user.toJSON(), database_config_1.database.secret, {
                     expiresIn: 604800
                 });
                 res.json({
                     success: true,
                     token: "JWT " + token,
                     user: parseResponse(user)
+                });
+            }
+            else {
+                res.status(400).json({
+                    success: false,
+                    msg: "Failed to authenticate"
                 });
             }
         })

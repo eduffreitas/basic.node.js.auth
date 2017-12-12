@@ -38,16 +38,17 @@ UserRoutes.post('/authenticate', (req, res, next) => {
     const password = req.body.password;
 
     UserModel.getUserByUserName(userName)
-        .then((err, user) => {
+        .then((user) => {
             if (!user) {
-                return res.status(404).json({success: false, msg: 'User not found.'});
-            }
+                res.status(404).json({success: false, msg: 'User not found.'});
+                return;
+            }        
 
             UserModel.comparePassword(password, user.password)
                 .then((isMatch) => {
     
                     if (isMatch) {
-                        const token = jwt.sign(user, dbConfig.secret, {
+                        const token = jwt.sign(user.toJSON(), dbConfig.secret, {
                             expiresIn: 604800
                         });
     
@@ -57,6 +58,13 @@ UserRoutes.post('/authenticate', (req, res, next) => {
                             user: parseResponse(user)
                         });
                     }
+                    else {
+                        res.status(400).json({
+                            success: false,
+                            msg: "Failed to authenticate"
+                        });
+                    }
+                    
                 })
                 .catch((err) => {
                     console.log(`An error ocurred while comparing the user password ${err}`);

@@ -9,7 +9,7 @@ exports.PassportConfig = function (passport) {
         secretOrKey: database_config_1.database.secret
     };
     passport.use(new passport_jwt_1.Strategy(opts, function (jwtPayload, done) {
-        user_model_1.UserModel.getUserById(jwtPayload._doc._id)
+        user_model_1.UserModel.getUserById(jwtPayload._id)
             .then(function (user) {
             if (user) {
                 return done(null, user);

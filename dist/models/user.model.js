@@ -27,7 +27,7 @@ exports.UserModel.getUserById = function (id) {
 };
 exports.UserModel.getUserByUserName = function (userName) {
     var query = { userName: userName };
-    return exports.UserModel.findOne(query).exec();
+    return exports.UserModel.findOne(query);
 };
 exports.UserModel.addUser = function (newUser) {
     return new es6_promise_1.Promise(function (resolve, reject) {

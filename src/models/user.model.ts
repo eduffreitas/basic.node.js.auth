@@ -36,7 +36,7 @@ UserModel.getUserById = (id) => {
 
 UserModel.getUserByUserName = (userName) => {
     const query = { userName: userName}
-    return UserModel.findOne(query).exec();
+    return UserModel.findOne(query);
 }
 
 UserModel.addUser = (newUser) => {
